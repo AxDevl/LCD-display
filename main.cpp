@@ -1,30 +1,30 @@
-/*Program to display simple messages and values on an LCD screen
-Adapted from publically available GITHUB program for an arduino
-01/11/23
-Version 3
-*/
-
-/* Ensure RW LCD pin is connected to GND and connect a 10 K potentiometer with wiper connected to V0 and other ends to A and K LCD pins.
- Connect a 100 ohm resistor (ideally 500 Ohm) between A LCD pin and VDD.
- */
+// To include all the libraries for the code space to reference other code / commands.
 
 #include "mbed.h"
 #include "TextLCD.h"
 #include <algorithm>
+#include <climits>
 #include <string>
 
+// ------- PIN references----------------
+
 TextLCD lcd(D14, D15, D13, D12, D11, D10, TextLCD::LCD20x4); // Connect these nucleo pins to RS, E, D4, D5, D6 and D7 pins of the LCD
- 
 DigitalOut bulb0(D0); //Bottom Left E
 DigitalOut bulb1(D1); //Bottom D
-DigitalOut bulb2(D2); //DP
+DigitalOut bulb2(D2); //Decimal Point
 DigitalOut bulb3(D3); //Bottom Right C
 DigitalOut bulb4(D4); //Top A
 DigitalOut bulb5(D5); //Top Right B
 DigitalOut bulb6(D6); //Top Left F
 DigitalOut bulb7(D7); //Middle
-DigitalIn button1(D8, PullUp); //LEFT
-DigitalIn button2(D9, PullUp);
+DigitalIn FirstNameButton(D8, PullUp); //Left Button  
+DigitalIn LastNameButton(D9, PullUp); //Right Button
+
+// --------------------------------------
+
+/*
+When ReturnPinName is called with a number as a parameter, the code will return the pin number asocciated to the number.
+*/
 
 PinName ReturnPinName(int count)
 {
@@ -41,6 +41,48 @@ PinName ReturnPinName(int count)
     }
     return D10;
 }
+
+/*
+This code is to return letters to appriopriate LED format.
+*/
+
+string ReturnLetterString(char count)
+{
+    switch(count)
+    {
+        case 'a': return 00001110;
+        case 'b': return 01010011;
+        case 'c': return 00001011;
+        case 'd': return 11000101;
+        case 'e': return 01001001;
+        case 'f': return 10001001;
+        case 'g': return 01110001;
+        case 'h': return 10010011;
+        case 'i': return 10100000;
+        case 'j': return 01110000;
+        case 'k': return 10000011;
+        case 'l': return 11000000;
+        case 'm': return 10011000;
+        case 'n': return 00010001;
+        case 'o': return 00001111;
+        case 'p': return 10001101;
+        case 'q': return 00011011;
+        case 'r': return 10000001;
+        case 's': return 01011001;
+        case 't': return 10001010;
+        case 'u': return 11010000;
+        case 'v': return 11110000;
+        case 'w': return 00100111;
+        case 'x': return 10010110;
+        case 'y': return 00110011;
+        case 'z': return 01101101;
+    }
+    return 0;
+}
+
+/*
+This code displays the actual pins to light up based on the string of numbers provided.
+*/
 
 void Display(string name)
 {
@@ -60,6 +102,15 @@ void Display(string name)
         count++;
     }
 }
+
+/*
+This code is for the LCD display the current execution if first name is displayed or last name is displayed.
+
+Parameter
+0 = Home Screen
+1 = First Name
+2 = Last Name
+*/
 
 void executionLCD(int buttonSelection)
     {
@@ -92,71 +143,45 @@ void executionLCD(int buttonSelection)
         
     }
 
-// main() runs in its own thread in the OS
+
+
+/*
+The main section will the first peice of code that is executed when the program loads.
+*/
+
 int main()
 {
-    Display("00110100");
-    thread_sleep_for(1000);
-    Display("10101000");
-    thread_sleep_for(1000);
-    Display("00101011");
-    thread_sleep_for(1000);
-    Display("00101001");
-    thread_sleep_for(1000);
-    Display("11111111");
-    thread_sleep_for(1000);
-    Display("10101011");
-    thread_sleep_for(1000);
+    string firstName = "Barto";
+    string LastName = "Godle";
 
     executionLCD(0);
    
-
     while (true)
     {
-        if (button1 == false)
+        if (FirstNameButton == false)
         {  
                 executionLCD(1);
-                Display("00110100");
-                thread_sleep_for(1000);
-                Display("10101000");
-                thread_sleep_for(1000);
-                Display("00101011");
-                thread_sleep_for(1000);
-                Display("00101001");
-                thread_sleep_for(1000);
-                Display("11111111");
-                thread_sleep_for(1000);
-                Display("10101011");
-                thread_sleep_for(1000);
+                for (char c : firstName)
+                {
+                    char letterDisplay = ReturnLetterString(c);
+                    Display(letterDisplay);
+                }
+                
         }
-        if (button1 == true && button2 == true)
+        if (FirstNameButton == true && LastNameButton == true)
         {
             executionLCD(0);
             Display("00000000");
             thread_sleep_for(1000);
         }
-        if (button2 == false)
+        if (LastNameButton == false)
         {       
                 executionLCD(2);
-                Display("11110100");
-                thread_sleep_for(1000);
-                Display("10111000");
-                thread_sleep_for(1000);
-                Display("00001011");
-                thread_sleep_for(1000);
-                Display("00101001");
-                thread_sleep_for(1000);
-                Display("00010000");
-                thread_sleep_for(1000);
-                Display("10101010");
-                thread_sleep_for(1000);
+                for (char c : firstName)
+                {
+                    char letterDisplay = ReturnLetterString(c);
+                    Display(letterDisplay);
+                }
         }
     }
-    /*bulb0 = true;
-    bulb1 = true;
-    bulb2 = true;
-    bulb3 = true;
-    bulb4 = true;
-    bulb5 = true;
-    bulb6 = true;*/
 }
