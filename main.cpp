@@ -43,11 +43,14 @@ PinName ReturnPinName(int count)
     return D10;
 }
 
+/*
+Return corresponding pattern layout for letter.
+*/
 
 string ReturnLetterString(char count)
 {
     
-    switch(count)
+    switch(tolower(count))
     {
         case 'a': return "00001110";
         case 'b': return "01010011";
@@ -151,7 +154,7 @@ The main section will the first peice of code that is executed when the program 
 
 int main()
 {
-    string firstName = "barto";
+    string firstName = "bArTo";
     string LastName = "godle";
 
     executionLCD(0);
@@ -183,7 +186,5 @@ int main()
                     thread_sleep_for(1000);
                 }
         }
-    }
-    
-    
+    } 
 }
